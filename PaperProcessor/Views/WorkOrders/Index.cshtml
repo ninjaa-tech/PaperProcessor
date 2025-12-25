@@ -70,6 +70,8 @@
                 <a asp-action="Edit" asp-route-id="@item.WorkOrderId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.WorkOrderId">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.WorkOrderId">Delete</a>
+                <a class="btn btn-sm btn-outline-dark" asp-controller="Production" asp-action="Timeline" asp-route-id="@item.WorkOrderId">Timeline</a>
+
             </td>
         </tr>
 }

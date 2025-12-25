@@ -14,10 +14,15 @@ namespace PaperProcessor.Data
         public DbSet<ProductCarton> ProductCartons => Set<ProductCarton>();
         public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
         public DbSet<ProductionStage> ProductionStages => Set<ProductionStage>();
+        public DbSet<StageLog> StageLogs => Set<StageLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<StageLog>()
+                .HasIndex(x => new { x.WorkOrderId, x.ProductionStageId })
+                .IsUnique();
 
             // Unique WorkOrderNo
             modelBuilder.Entity<WorkOrder>()

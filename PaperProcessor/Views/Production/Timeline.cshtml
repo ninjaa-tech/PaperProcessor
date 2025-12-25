@@ -1,0 +1,64 @@
+﻿@model List<PaperProcessor.Models.StageLog>
+@{
+    var wo = (PaperProcessor.Models.WorkOrder)ViewBag.WorkOrder;
+    ViewData["Title"] = $"Production Timeline - {wo.WorkOrderNo}";
+}
+
+<h2>Production Timeline</h2>
+
+<div class="mb-3">
+    <div><strong>Work Order:</strong> @wo.WorkOrderNo</div>
+    <div><strong>Customer:</strong> @wo.Customer?.Name</div>
+    <div><strong>Product:</strong> @wo.ProductCarton?.Name</div>
+    <div><strong>Qty Ordered:</strong> @wo.QuantityOrdered</div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Stage</th>
+            <th>Started</th>
+            <th>Finished</th>
+            <th>Qty Out</th>
+            <th>Scrap</th>
+            <th>Notes</th>
+            <th style="width:240px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductionStage?.Name</td>
+                <td>@(item.StartedAt?.ToLocalTime().ToString("g") ?? "-")</td>
+                <td>@(item.EndedAt?.ToLocalTime().ToString("g") ?? "-")</td>
+                <td>@item.QtyOut</td>
+                <td>@item.ScrapQty</td>
+                <td>@item.Notes</td>
+                <td>
+                    @if (item.StartedAt == null)
+                    {
+                        <form asp-action="Start" method="post" class="d-inline">
+                            <input type="hidden" name="stageLogId" value="@item.StageLogId" />
+                            <button class="btn btn-sm btn-primary">Start</button>
+                        </form>
+                    }
+                    else if (item.EndedAt == null)
+                    {
+                        <form asp-action="Finish" method="post" class="d-inline">
+                            <input type="hidden" name="stageLogId" value="@item.StageLogId" />
+                            <input type="number" name="qtyOut" class="form-control form-control-sm d-inline" style="width:90px;" placeholder="Out" min="0" required />
+                            <input type="number" name="scrapQty" class="form-control form-control-sm d-inline" style="width:90px;" placeholder="Scrap" min="0" required />
+                            <input type="text" name="notes" class="form-control form-control-sm d-inline" style="width:160px;" placeholder="Notes" />
+                            <button class="btn btn-sm btn-success mt-1">Finish</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Done</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
