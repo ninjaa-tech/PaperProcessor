@@ -84,6 +84,11 @@
                 asp-action="Summary"
                 asp-route-id="@item.WorkOrderId">Costing</a>
 
+                <a class="btn btn-sm btn-outline-primary"
+                asp-controller="Invoices"
+                asp-action="Generate"
+                asp-route-workOrderId="@item.WorkOrderId">Invoice</a>
+
             </td>
         </tr>
 }

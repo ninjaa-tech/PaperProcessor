@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PaperProcessor.Data;
+using PaperProcessor.Services;
+using QuestPDF.Infrastructure;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +11,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<PaperProcessorContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<InvoiceNumberService>();
 
 
 // Add services to the container.

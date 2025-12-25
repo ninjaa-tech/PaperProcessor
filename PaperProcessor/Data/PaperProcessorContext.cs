@@ -17,11 +17,18 @@ namespace PaperProcessor.Data
         public DbSet<StageLog> StageLogs => Set<StageLog>();
         public DbSet<Material> Materials => Set<Material>();
         public DbSet<MaterialUsage> MaterialUsages => Set<MaterialUsage>();
+        public DbSet<Invoice> Invoices => Set<Invoice>();
+        public DbSet<InvoiceLine> InvoiceLines => Set<InvoiceLine>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Invoice>()
+                .HasIndex(i => i.InvoiceNo)
+                .IsUnique();
+
 
             modelBuilder.Entity<StageLog>()
                 .HasIndex(x => new { x.WorkOrderId, x.ProductionStageId })
