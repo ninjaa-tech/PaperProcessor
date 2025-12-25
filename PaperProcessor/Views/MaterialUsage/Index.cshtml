@@ -1,0 +1,34 @@
+﻿@model IEnumerable<PaperProcessor.Models.MaterialUsage>
+@{
+    ViewData["Title"] = "Material Usage";
+}
+
+<h3>Material Usage</h3>
+
+<a class="btn btn-sm btn-primary"
+   asp-action="Create"
+   asp-route-workOrderId="@ViewBag.WorkOrderId">
+    Add Material Usage
+</a>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Material</th>
+            <th>Qty Used</th>
+            <th>Unit Cost</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Material?.Name</td>
+                <td>@u.QuantityUsed</td>
+                <td>@u.CostPerUnitSnapshot</td>
+                <td>@(u.QuantityUsed* u.CostPerUnitSnapshot)</td>
+            </tr>
+        }
+    </tbody>
+</table>

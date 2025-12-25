@@ -83,6 +83,21 @@ namespace PaperProcessor.Controllers
             log.ScrapQty = scrapQty;
             log.Notes = notes;
 
+            // calculate labor minutes
+            if (log.StartedAt != null && log.EndedAt != null)
+            {
+                log.LaborMinutes = (int)Math.Max(
+                    0,
+                    (log.EndedAt.Value - log.StartedAt.Value).TotalMinutes
+                );
+            }
+
+            // set hourly rate snapshot (demo default)
+            if (log.HourlyRateSnapshot <= 0)
+            {
+                log.HourlyRateSnapshot = 30m; // $30/hour demo rate
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Timeline), new { id = log.WorkOrderId });
         }

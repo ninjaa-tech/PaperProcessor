@@ -16,6 +16,8 @@ namespace PaperProcessor.Models
 
         public DateTime? StartedAt { get; set; }
         public DateTime? EndedAt { get; set; }
+        public int LaborMinutes { get; set; }   // stored for reporting
+        public decimal HourlyRateSnapshot { get; set; }  // we’ll use later when employees exist
 
         [Range(0, 100000000)]
         public int QtyOut { get; set; }

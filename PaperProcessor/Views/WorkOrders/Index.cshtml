@@ -70,7 +70,19 @@
                 <a asp-action="Edit" asp-route-id="@item.WorkOrderId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.WorkOrderId">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.WorkOrderId">Delete</a>
-                <a class="btn btn-sm btn-outline-dark" asp-controller="Production" asp-action="Timeline" asp-route-id="@item.WorkOrderId">Timeline</a>
+
+                <a class="btn btn-sm btn-outline-dark" 
+                asp-controller="Production" asp-action="Timeline" asp-route-id="@item.WorkOrderId">Timeline</a>
+
+                <a class="btn btn-sm btn-outline-secondary"
+                asp-controller="MaterialUsage"
+                asp-action="Index"
+                asp-route-workOrderId="@item.WorkOrderId">Materials</a>
+
+                <a class="btn btn-sm btn-outline-success"
+                asp-controller="Costing"
+                asp-action="Summary"
+                asp-route-id="@item.WorkOrderId">Costing</a>
 
             </td>
         </tr>

@@ -1,0 +1,49 @@
+﻿@model PaperProcessor.ViewModels.WorkOrderCostingVm
+@{
+    ViewData["Title"] = "Costing Summary";
+}
+
+<h2>Costing Summary</h2>
+
+<div class="mb-3">
+    <div><strong>Work Order:</strong> @Model.WorkOrderNo</div>
+    <div><strong>Customer:</strong> @Model.CustomerName</div>
+    <div><strong>Product:</strong> @Model.ProductName</div>
+</div>
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th style="width:250px;">Quantity Ordered</th>
+            <td>@Model.QuantityOrdered</td>
+        </tr>
+        <tr>
+            <th>Unit Sell Price</th>
+            <td>@Model.UnitSellPrice</td>
+        </tr>
+        <tr>
+            <th>Revenue (No GST)</th>
+            <td><strong>@Model.Revenue</strong></td>
+        </tr>
+        <tr>
+            <th>Material Cost</th>
+            <td>@Model.MaterialCost</td>
+        </tr>
+        <tr>
+            <th>Labor Cost</th>
+            <td>@Model.LaborCost</td>
+        </tr>
+        <tr>
+            <th>Total Cost</th>
+            <td><strong>@Model.TotalCost</strong></td>
+        </tr>
+        <tr>
+            <th>Profit</th>
+            <td><strong>@Model.Profit</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="mt-3">
+    <a class="btn btn-secondary" asp-controller="WorkOrders" asp-action="Index">Back to Work Orders</a>
+</div>

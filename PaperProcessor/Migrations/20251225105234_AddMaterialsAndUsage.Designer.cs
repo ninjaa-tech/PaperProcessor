@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaperProcessor.Data;
 
@@ -11,9 +12,11 @@ using PaperProcessor.Data;
 namespace PaperProcessor.Migrations
 {
     [DbContext(typeof(PaperProcessorContext))]
-    partial class PaperProcessorContextModelSnapshot : ModelSnapshot
+    [Migration("20251225105234_AddMaterialsAndUsage")]
+    partial class AddMaterialsAndUsage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,12 +217,6 @@ namespace PaperProcessor.Migrations
 
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("HourlyRateSnapshot")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("LaborMinutes")
-                        .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(250)

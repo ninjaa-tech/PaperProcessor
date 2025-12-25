@@ -15,6 +15,9 @@ namespace PaperProcessor.Data
         public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
         public DbSet<ProductionStage> ProductionStages => Set<ProductionStage>();
         public DbSet<StageLog> StageLogs => Set<StageLog>();
+        public DbSet<Material> Materials => Set<Material>();
+        public DbSet<MaterialUsage> MaterialUsages => Set<MaterialUsage>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

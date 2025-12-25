@@ -1,0 +1,19 @@
+﻿@model PaperProcessor.Models.MaterialUsage
+
+<h3>Add Material Usage</h3>
+
+<form asp-action="Create">
+    <input type="hidden" asp-for="WorkOrderId" />
+
+    <div class="form-group">
+        <label>Material</label>
+        <select asp-for="MaterialId" asp-items="ViewBag.MaterialId" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Quantity Used</label>
+        <input asp-for="QuantityUsed" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">Save</button>
+</form>
