@@ -1,0 +1,65 @@
+﻿@model IEnumerable<PaperProcessor.Models.ProductCarton>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LengthMm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WidthMm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HeightMm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Style)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LengthMm)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WidthMm)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HeightMm)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Style)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ProductCartonId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ProductCartonId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ProductCartonId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,54 @@
+﻿@model PaperProcessor.Models.ProductCarton
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>ProductCarton</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LengthMm)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LengthMm)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WidthMm)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WidthMm)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HeightMm)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HeightMm)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Style)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Style)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ProductCartonId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

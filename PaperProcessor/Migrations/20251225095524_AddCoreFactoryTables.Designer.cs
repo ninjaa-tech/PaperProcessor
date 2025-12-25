@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaperProcessor.Data;
 
@@ -11,9 +12,11 @@ using PaperProcessor.Data;
 namespace PaperProcessor.Migrations
 {
     [DbContext(typeof(PaperProcessorContext))]
-    partial class PaperProcessorContextModelSnapshot : ModelSnapshot
+    [Migration("20251225095524_AddCoreFactoryTables")]
+    partial class AddCoreFactoryTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
