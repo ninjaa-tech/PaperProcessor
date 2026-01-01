@@ -1,96 +1,113 @@
 ﻿@model IEnumerable<PaperProcessor.Models.WorkOrder>
+@using PaperProcessor.Models
+
+@functions {
+    string BadgeClass(WorkOrderStatus s) => s switch
+    {
+        WorkOrderStatus.Draft => "bg-secondary",
+        WorkOrderStatus.Approved => "bg-info",
+        WorkOrderStatus.InProduction => "bg-primary",
+        WorkOrderStatus.Completed => "bg-success",
+        WorkOrderStatus.Invoiced => "bg-dark",
+        WorkOrderStatus.Cancelled => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Work Orders";
 }
 
-<h1>Index</h1>
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-0">Work Orders</h2>
+        <div class="text-muted">Manage orders, production, costing and invoices</div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.WorkOrderNo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductCarton)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.QuantityOrdered)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UnitSellPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.WorkOrderNo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Customer.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductCarton.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QuantityOrdered)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnitSellPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.WorkOrderId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.WorkOrderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.WorkOrderId">Delete</a>
+    <a class="btn btn-primary" asp-action="Create">+ New Work Order</a>
+</div>
 
-                <a class="btn btn-sm btn-outline-dark" 
-                asp-controller="Production" asp-action="Timeline" asp-route-id="@item.WorkOrderId">Timeline</a>
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label mb-1">Search</label>
+                <input name="search" value="@ViewBag.Search" class="form-control" placeholder="WO no, customer, product" />
+            </div>
 
-                <a class="btn btn-sm btn-outline-secondary"
-                asp-controller="MaterialUsage"
-                asp-action="Index"
-                asp-route-workOrderId="@item.WorkOrderId">Materials</a>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Status</label>
+                <select name="status" class="form-select" asp-items="ViewBag.StatusList">
+                    <option value="">All</option>
+                </select>
+            </div>
 
-                <a class="btn btn-sm btn-outline-success"
-                asp-controller="Costing"
-                asp-action="Summary"
-                asp-route-id="@item.WorkOrderId">Costing</a>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-dark flex-grow-1">Filter</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
 
-                <a class="btn btn-sm btn-outline-primary"
-                asp-controller="Invoices"
-                asp-action="Generate"
-                asp-route-workOrderId="@item.WorkOrderId">Invoice</a>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>WO No</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th class="text-end">Qty</th>
+                        <th>Due</th>
+                        <th class="text-end">Unit Price</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th class="text-end" style="min-width: 520px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@item.WorkOrderNo</td>
+                            <td>@(item.Customer?.Name ?? "-")</td>
+                            <td>@(item.ProductCarton?.Name ?? "-")</td>
+                            <td class="text-end">@item.QuantityOrdered</td>
+                            <td>@item.DueDate.ToString("yyyy-MM-dd")</td>
+                            <td class="text-end">@item.UnitSellPrice.ToString("0.00")</td>
+                            <td><span class="badge @BadgeClass(item.Status)">@item.Status</span></td>
+                            <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
 
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                            <td class="text-end">
+                                <div class="btn-group" role="group" aria-label="Work order actions">
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.WorkOrderId">Details</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.WorkOrderId">Edit</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Delete" asp-route-id="@item.WorkOrderId">Delete</a>
+
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       asp-controller="Production" asp-action="Timeline" asp-route-id="@item.WorkOrderId">Timeline</a>
+
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       asp-controller="MaterialUsage" asp-action="Index" asp-route-workOrderId="@item.WorkOrderId">Materials</a>
+
+                                    <a class="btn btn-sm btn-outline-success"
+                                       asp-controller="Costing" asp-action="Summary" asp-route-id="@item.WorkOrderId">Costing</a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-controller="Invoices" asp-action="Generate" asp-route-workOrderId="@item.WorkOrderId">Invoice</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-muted mt-3">No work orders found. Try adjusting filters or create a new work order.</div>
+        }
+    </div>
+</div>

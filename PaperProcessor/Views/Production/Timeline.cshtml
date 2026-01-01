@@ -1,64 +1,138 @@
 ﻿@model List<PaperProcessor.Models.StageLog>
+@using PaperProcessor.Models
+
 @{
-    var wo = (PaperProcessor.Models.WorkOrder)ViewBag.WorkOrder;
+    var wo = (WorkOrder)ViewBag.WorkOrder;
     ViewData["Title"] = $"Production Timeline - {wo.WorkOrderNo}";
+
+    int completed = Model.Count(x => x.EndedAt != null);
+    int total = Model.Count;
+    int percent = total == 0 ? 0 : (completed * 100 / total);
+
+    string StageBadge(StageLog l)
+    {
+        if (l.EndedAt != null) return "bg-success";
+        if (l.StartedAt != null) return "bg-primary";
+        return "bg-secondary";
+    }
+
+    string StageText(StageLog l)
+    {
+        if (l.EndedAt != null) return "Completed";
+        if (l.StartedAt != null) return "In Progress";
+        return "Not Started";
+    }
 }
 
-<h2>Production Timeline</h2>
-
 <div class="mb-3">
-    <div><strong>Work Order:</strong> @wo.WorkOrderNo</div>
-    <div><strong>Customer:</strong> @wo.Customer?.Name</div>
-    <div><strong>Product:</strong> @wo.ProductCarton?.Name</div>
-    <div><strong>Qty Ordered:</strong> @wo.QuantityOrdered</div>
+    <h2 class="mb-1">Production Timeline</h2>
+    <div class="text-muted">
+        Work Order: <strong>@wo.WorkOrderNo</strong> |
+        Customer: <strong>@wo.Customer?.Name</strong> |
+        Product: <strong>@wo.ProductCarton?.Name</strong>
+    </div>
 </div>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Stage</th>
-            <th>Started</th>
-            <th>Finished</th>
-            <th>Qty Out</th>
-            <th>Scrap</th>
-            <th>Notes</th>
-            <th style="width:240px;">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.ProductionStage?.Name</td>
-                <td>@(item.StartedAt?.ToLocalTime().ToString("g") ?? "-")</td>
-                <td>@(item.EndedAt?.ToLocalTime().ToString("g") ?? "-")</td>
-                <td>@item.QtyOut</td>
-                <td>@item.ScrapQty</td>
-                <td>@item.Notes</td>
-                <td>
-                    @if (item.StartedAt == null)
+<!-- Progress bar -->
+<div class="mb-4">
+    <div class="d-flex justify-content-between mb-1">
+        <small class="text-muted">Overall Progress</small>
+        <small class="text-muted">@percent%</small>
+    </div>
+    <div class="progress">
+        <div class="progress-bar bg-success" role="progressbar"
+             style="width:@percent%" aria-valuenow="@percent"
+             aria-valuemin="0" aria-valuemax="100">
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Stage</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                        <th>Finished</th>
+                        <th class="text-end">Qty Out</th>
+                        <th class="text-end">Scrap</th>
+                        <th>Notes</th>
+                        <th class="text-end" style="width:280px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
                     {
-                        <form asp-action="Start" method="post" class="d-inline">
-                            <input type="hidden" name="stageLogId" value="@item.StageLogId" />
-                            <button class="btn btn-sm btn-primary">Start</button>
-                        </form>
+                        <tr>
+                            <td class="fw-semibold">@item.ProductionStage?.Name</td>
+
+                            <td>
+                                <span class="badge @StageBadge(item)">
+                                    @StageText(item)
+                                </span>
+                            </td>
+
+                            <td>@(item.StartedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                            <td>@(item.EndedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+
+                            <td class="text-end">@item.QtyOut</td>
+                            <td class="text-end">@item.ScrapQty</td>
+                            <td class="text-muted">@item.Notes</td>
+
+                            <td class="text-end">
+                                @if (item.StartedAt == null)
+                                {
+                                    <form asp-action="Start" method="post" class="d-inline">
+                                        <input type="hidden" name="stageLogId" value="@item.StageLogId" />
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            Start
+                                        </button>
+                                    </form>
+                                }
+                                else if (item.EndedAt == null)
+                                {
+                                    <form asp-action="Finish" method="post" class="d-inline-flex gap-1">
+                                        <input type="hidden" name="stageLogId" value="@item.StageLogId" />
+
+                                        <input type="number" name="qtyOut"
+                                               class="form-control form-control-sm"
+                                               placeholder="Out" min="0" required
+                                               style="width:80px;" />
+
+                                        <input type="number" name="scrapQty"
+                                               class="form-control form-control-sm"
+                                               placeholder="Scrap" min="0" required
+                                               style="width:80px;" />
+
+                                        <input type="text" name="notes"
+                                               class="form-control form-control-sm"
+                                               placeholder="Notes"
+                                               style="width:140px;" />
+
+                                        <button class="btn btn-sm btn-success">
+                                            Finish
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-success fw-semibold">✔ Done</span>
+                                }
+                            </td>
+                        </tr>
                     }
-                    else if (item.EndedAt == null)
-                    {
-                        <form asp-action="Finish" method="post" class="d-inline">
-                            <input type="hidden" name="stageLogId" value="@item.StageLogId" />
-                            <input type="number" name="qtyOut" class="form-control form-control-sm d-inline" style="width:90px;" placeholder="Out" min="0" required />
-                            <input type="number" name="scrapQty" class="form-control form-control-sm d-inline" style="width:90px;" placeholder="Scrap" min="0" required />
-                            <input type="text" name="notes" class="form-control form-control-sm d-inline" style="width:160px;" placeholder="Notes" />
-                            <button class="btn btn-sm btn-success mt-1">Finish</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Done</span>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a class="btn btn-outline-secondary"
+       asp-controller="WorkOrders" asp-action="Index">
+        ← Back to Work Orders
+    </a>
+</div>

@@ -20,10 +20,37 @@ namespace PaperProcessor.Controllers
         }
 
         // GET: WorkOrders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search, WorkOrderStatus? status)
         {
-            var paperProcessorContext = _context.WorkOrders.Include(w => w.Customer).Include(w => w.ProductCarton);
-            return View(await paperProcessorContext.ToListAsync());
+            var query = _context.WorkOrders
+                .Include(w => w.Customer)
+                .Include(w => w.ProductCarton)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                query = query.Where(w =>
+                    w.WorkOrderNo.Contains(search) ||
+                    w.Customer!.Name.Contains(search) ||
+                    w.ProductCarton!.Name.Contains(search));
+            }
+
+            if (status.HasValue)
+                query = query.Where(w => w.Status == status.Value);
+
+            ViewBag.Search = search ?? "";
+            ViewBag.Status = status?.ToString() ?? "";
+            ViewBag.StatusList = new SelectList(
+                Enum.GetValues(typeof(WorkOrderStatus)).Cast<WorkOrderStatus>()
+                    .Select(s => new { Id = s, Name = s.ToString() }),
+                "Id", "Name", status);
+
+            var result = await query
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+
+            return View(result);
         }
 
         // GET: WorkOrders/Details/5
