@@ -1,8 +1,161 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using PaperProcessor.Models
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var dueSoon = ViewBag.DueSoon as List<WorkOrder> ?? new();
+    var recent = ViewBag.Recent as List<WorkOrder> ?? new();
+
+    int totalWO = ViewBag.TotalWorkOrders ?? 0;
+    int wipWO = ViewBag.WipWorkOrders ?? 0;
+    int overdueWO = ViewBag.OverdueWorkOrders ?? 0;
+    int totalInv = ViewBag.TotalInvoices ?? 0;
+    decimal revenue = ViewBag.TotalRevenue ?? 0m;
+
+    string BadgeClass(WorkOrderStatus s) => s switch
+    {
+        WorkOrderStatus.Draft => "bg-secondary",
+        WorkOrderStatus.Approved => "bg-info",
+        WorkOrderStatus.InProduction => "bg-primary",
+        WorkOrderStatus.Completed => "bg-success",
+        WorkOrderStatus.Invoiced => "bg-dark",
+        WorkOrderStatus.Cancelled => "bg-danger",
+        _ => "bg-secondary"
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mb-4">
+    <h2 class="mb-1">PaperProcessor Dashboard</h2>
+    <div class="text-muted">Single factory workflow: Orders → Production → Costing → Invoicing</div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Total Work Orders</div>
+                <div class="fs-3 fw-bold">@totalWO</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Work In Progress</div>
+                <div class="fs-3 fw-bold">@wipWO</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Overdue Orders</div>
+                <div class="fs-3 fw-bold">@overdueWO</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Revenue (No GST)</div>
+                <div class="fs-3 fw-bold">@revenue.ToString("0.00")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Work Orders Due Soon (Next 7 Days)</h5>
+                    <a class="btn btn-sm btn-outline-dark" asp-controller="WorkOrders" asp-action="Index">View All</a>
+                </div>
+
+                @if (!dueSoon.Any())
+                {
+                    <div class="text-muted">No upcoming work orders. Create one to get started.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>WO No</th>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Due</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var wo in dueSoon)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@wo.WorkOrderNo</td>
+                                        <td>@wo.Customer?.Name</td>
+                                        <td>@wo.ProductCarton?.Name</td>
+                                        <td>@wo.DueDate.ToString("yyyy-MM-dd")</td>
+                                        <td><span class="badge @BadgeClass(wo.Status)">@wo.Status</span></td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-secondary"
+                                               asp-controller="Production" asp-action="Timeline" asp-route-id="@wo.WorkOrderId">Timeline</a>
+                                            <a class="btn btn-sm btn-outline-success"
+                                               asp-controller="Costing" asp-action="Summary" asp-route-id="@wo.WorkOrderId">Costing</a>
+                                            <a class="btn btn-sm btn-outline-primary"
+                                               asp-controller="Invoices" asp-action="Generate" asp-route-workOrderId="@wo.WorkOrderId">Invoice</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="mb-2">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-dark" asp-controller="WorkOrders" asp-action="Create">Create Work Order</a>
+                    <a class="btn btn-outline-dark" asp-controller="Customers" asp-action="Create">Add Customer</a>
+                    <a class="btn btn-outline-dark" asp-controller="ProductCartons" asp-action="Create">Add Product</a>
+                    <a class="btn btn-outline-dark" asp-controller="Materials" asp-action="Create">Add Material</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Recent Work Orders</h5>
+                </div>
+
+                @if (!recent.Any())
+                {
+                    <div class="text-muted">No work orders yet.</div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var wo in recent)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold">@wo.WorkOrderNo</div>
+                                    <div class="text-muted small">@wo.Customer?.Name</div>
+                                </div>
+                                <span class="badge @BadgeClass(wo.Status)">@wo.Status</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
 </div>
